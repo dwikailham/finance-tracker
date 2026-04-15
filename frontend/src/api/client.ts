@@ -22,8 +22,13 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    
+    // Jangan intercept jika itu adalah route auth (login/refresh) agar tidak infinite loop
+    const isAuthRoute = originalRequest.url?.includes('/auth/login') || 
+                        originalRequest.url?.includes('/auth/register') ||
+                        originalRequest.url?.includes('/auth/refresh');
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       originalRequest._retry = true;
       try {
         const { data } = await axios.post(
@@ -38,7 +43,10 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch {
         localStorage.removeItem("accessToken");
-        window.location.href = "/login";
+        // Hanya redirect jika tidak sedang berada di halaman public
+        if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
+          window.location.href = "/login";
+        }
         return Promise.reject(error);
       }
     }

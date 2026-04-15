@@ -11,6 +11,7 @@ import { generalLimiter } from "./middleware/rateLimiter.middleware.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import categoryRoutes from "./modules/category/category.routes.js";
 import accountRoutes from "./modules/account/account.routes.js";
+import transactionRoutes from "./modules/transaction/transaction.routes.js";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/accounts", accountRoutes);
+app.use("/api/transactions", transactionRoutes);
 
 // === Error Handler (harus paling akhir) ===
 app.use(errorHandler);

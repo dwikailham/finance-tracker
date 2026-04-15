@@ -17,9 +17,9 @@ export function validate(schema: ZodSchema) {
     const data = result.data as any;
 
     // Overwrite dengan data yang sudah di-parse & transform
-    req.body = data.body;
-    req.query = data.query;
-    req.params = data.params;
+    if (data.body) req.body = data.body;
+    if (data.query) Object.assign(req.query, data.query);
+    if (data.params) Object.assign(req.params, data.params);
 
     next();
   };

@@ -5,7 +5,7 @@ services:
     container_name: fintrack_db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: admin
       POSTGRES_DB: fintrack
     ports:
       - "5432:5432"

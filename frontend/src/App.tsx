@@ -12,6 +12,8 @@ import AccountListPage from "./pages/AccountListPage";
 import BudgetPage from "./pages/BudgetPage";
 import DashboardPage from "./pages/DashboardPage";
 import CategoryListPage from "./pages/CategoryListPage";
+import ReportPage from "./pages/ReportPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const App: React.FC = () => {
   return (
@@ -37,8 +39,8 @@ const App: React.FC = () => {
             <Route path="accounts" element={<AccountListPage />} />
             <Route path="categories" element={<CategoryListPage />} />
             <Route path="budget" element={<BudgetPage />} />
-            <Route path="reports" element={<div>Laporan</div>} />
-            <Route path="settings" element={<div>Pengaturan</div>} />
+            <Route path="reports" element={<ReportPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           {/* Catch all */}

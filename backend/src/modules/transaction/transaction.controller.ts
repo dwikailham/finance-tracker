@@ -16,7 +16,7 @@ export class TransactionController {
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = (req as any).userId;
-      const transaction = await transactionService.getById(userId, req.params.id);
+      const transaction = await transactionService.getById(req.params.id as string, userId);
       sendSuccess({ res, message: "Detail transaksi berhasil diambil", data: transaction });
     } catch (error: any) {
       if (error.statusCode) return sendError(res, error.statusCode, error.message);
@@ -38,7 +38,11 @@ export class TransactionController {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = (req as any).userId;
-      const transaction = await transactionService.update(userId, req.params.id, req.body);
+      const transaction = await transactionService.update(
+        req.params.id as string,
+        userId,
+        req.body
+      );
       sendSuccess({ res, message: "Transaksi berhasil diperbarui", data: transaction });
     } catch (error: any) {
       if (error.statusCode) return sendError(res, error.statusCode, error.message);
@@ -49,7 +53,7 @@ export class TransactionController {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = (req as any).userId;
-      await transactionService.delete(userId, req.params.id);
+      await transactionService.delete(req.params.id as string, userId);
       sendSuccess({ res, message: "Transaksi berhasil dihapus" });
     } catch (error: any) {
       if (error.statusCode) return sendError(res, error.statusCode, error.message);

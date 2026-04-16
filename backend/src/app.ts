@@ -12,6 +12,7 @@ import authRoutes from "./modules/auth/auth.routes.js";
 import categoryRoutes from "./modules/category/category.routes.js";
 import accountRoutes from "./modules/account/account.routes.js";
 import transactionRoutes from "./modules/transaction/transaction.routes.js";
+import budgetRoutes from "./modules/budget/budget.routes.js";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionRoutes);
+app.use("/api/budgets", budgetRoutes);
 
 // === Error Handler (harus paling akhir) ===
 app.use(errorHandler);

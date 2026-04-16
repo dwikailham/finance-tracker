@@ -1,21 +1,21 @@
 import React, { useState } from "react";
-import { 
-  Table, 
-  Card, 
-  Button, 
-  Space, 
-  Typography, 
-  Input, 
-  Select, 
-  DatePicker, 
+import {
+  Table,
+  Card,
+  Button,
+  Space,
+  Typography,
+  Input,
+  Select,
+  DatePicker,
   Popconfirm,
   Tooltip
 } from "antd";
-import { 
-  PlusOutlined, 
-  SearchOutlined, 
-  EditOutlined, 
-  DeleteOutlined, 
+import {
+  PlusOutlined,
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
   SwapOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
@@ -128,13 +128,13 @@ const TransactionListPage: React.FC = () => {
       render: (_: any, record: any) => (
         <Space size="middle">
           <Tooltip title="Edit">
-            <Button 
-              type="text" 
-              icon={<EditOutlined />} 
+            <Button
+              type="text"
+              icon={<EditOutlined />}
               onClick={() => {
                 setEditingTransaction(record);
                 setIsFormVisible(true);
-              }} 
+              }}
             />
           </Tooltip>
           <Popconfirm
@@ -160,16 +160,16 @@ const TransactionListPage: React.FC = () => {
           <Title level={3} style={{ margin: 0 }}>Daftar Transaksi</Title>
           <Text type="secondary">Lihat dan kelola semua histori finansial Anda</Text>
         </div>
-        <Button 
-          type="primary" 
-          size="large" 
+        <Button
+          type="primary"
+          size="large"
           icon={<PlusOutlined />}
           onClick={() => {
             setEditingTransaction(null);
             setIsFormVisible(true);
           }}
-          style={{ 
-            borderRadius: 8, 
+          style={{
+            borderRadius: 8,
             height: 44,
             background: "linear-gradient(90deg, #6366f1 0%, #a855f7 100%)",
             border: "none"
@@ -179,7 +179,7 @@ const TransactionListPage: React.FC = () => {
         </Button>
       </div>
 
-      <TransactionForm 
+      <TransactionForm
         visible={isFormVisible}
         onCancel={() => setIsFormVisible(false)}
         editingTransaction={editingTransaction}
@@ -187,16 +187,16 @@ const TransactionListPage: React.FC = () => {
 
       <Card className="glassmorphism" style={{ marginBottom: 24, borderRadius: 16 }}>
         <Space wrap size="middle">
-          <Input 
-            placeholder="Cari deskripsi..." 
-            prefix={<SearchOutlined />} 
+          <Input
+            placeholder="Cari deskripsi..."
+            prefix={<SearchOutlined />}
             style={{ width: "100%", maxWidth: 220 }}
             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value, page: 1 }))}
           />
           <Select
             placeholder="Tipe"
             allowClear
-            style={{ width: "100%", maxWidth: 160 }}
+            style={{ width: 220 }}
             options={[
               { label: "Pemasukan", value: "income" },
               { label: "Pengeluaran", value: "expense" },
@@ -204,7 +204,7 @@ const TransactionListPage: React.FC = () => {
             ]}
             onChange={(val) => setFilters(prev => ({ ...prev, type: val as TransactionType, page: 1 }))}
           />
-          <RangePicker 
+          <RangePicker
             style={{ width: "100%", maxWidth: 300 }}
             onChange={(dates) => {
               setFilters(prev => ({
@@ -219,9 +219,9 @@ const TransactionListPage: React.FC = () => {
       </Card>
 
       <Card className="glassmorphism" style={{ borderRadius: 16, overflow: "hidden" }} bodyStyle={{ padding: 0 }}>
-        <Table 
-          columns={columns} 
-          dataSource={data?.data} 
+        <Table
+          columns={columns}
+          dataSource={data?.data}
           loading={isLoading}
           scroll={{ x: 'max-content' }}
           rowKey="id"

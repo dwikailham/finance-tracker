@@ -91,6 +91,36 @@ export class AuthService {
     return user;
   }
 
+  async updateProfile(userId: string, data: { name?: string; currentPassword?: string; newPassword?: string }) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw { statusCode: 404, message: "User tidak ditemukan" };
+
+    const updateData: any = {};
+
+    if (data.name) {
+      updateData.name = data.name;
+    }
+
+    if (data.newPassword) {
+      if (!data.currentPassword) {
+        throw { statusCode: 400, message: "Password lama harus diisi untuk mengganti password" };
+      }
+      const isValid = await bcrypt.compare(data.currentPassword, user.password);
+      if (!isValid) {
+        throw { statusCode: 400, message: "Password lama tidak sesuai" };
+      }
+      updateData.password = await bcrypt.hash(data.newPassword, SALT_ROUNDS);
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: { id: true, name: true, email: true, currency: true, createdAt: true },
+    });
+
+    return updated;
+  }
+
   async refreshToken(token: string) {
     try {
       const payload = jwt.verify(token, env.JWT_REFRESH_SECRET) as {

@@ -13,6 +13,7 @@ import categoryRoutes from "./modules/category/category.routes.js";
 import accountRoutes from "./modules/account/account.routes.js";
 import transactionRoutes from "./modules/transaction/transaction.routes.js";
 import budgetRoutes from "./modules/budget/budget.routes.js";
+import reportRoutes from "./modules/report/report.routes.js";
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/budgets", budgetRoutes);
+app.use("/api/reports", reportRoutes);
 
 // === Error Handler (harus paling akhir) ===
 app.use(errorHandler);

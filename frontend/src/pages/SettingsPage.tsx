@@ -66,15 +66,15 @@ const SettingsPage: React.FC = () => {
             {/* Info Akun */}
             <Card className="glass-effect" style={{ borderRadius: 16 }}>
               <div style={{ textAlign: "center", marginBottom: 24 }}>
-                <Avatar 
-                  size={80} 
-                  icon={<UserOutlined />} 
-                  style={{ backgroundColor: "#6366f1", marginBottom: 16, boxShadow: "0 8px 16px rgba(99, 102, 241, 0.2)" }} 
+                <Avatar
+                  size={80}
+                  icon={<UserOutlined />}
+                  style={{ backgroundColor: "#6366f1", marginBottom: 16, boxShadow: "0 8px 16px rgba(99, 102, 241, 0.2)" }}
                 />
                 <Title level={4} style={{ margin: 0 }}>{user.name}</Title>
                 <Text type="secondary">{user.email}</Text>
               </div>
-              
+
               <Descriptions column={1} size="small" colon={false} labelStyle={{ color: "var(--text-secondary)", fontSize: 13 }}>
                 <Descriptions.Item label={<Space><MailOutlined /> Email</Space>}>{user.email}</Descriptions.Item>
                 <Descriptions.Item label={<Space><GlobalOutlined /> Mata Uang</Space>}>{user.currency || "IDR"}</Descriptions.Item>
@@ -82,7 +82,7 @@ const SettingsPage: React.FC = () => {
               </Descriptions>
             </Card>
 
-            <Card className="glass-effect" style={{ borderRadius: 16 }}>
+            {/* <Card className="glass-effect" style={{ borderRadius: 16 }}>
               <Title level={5} style={{ fontSize: 14, marginBottom: 16 }}>STATUS AKUN</Title>
               <div style={{ 
                 padding: "12px 16px", 
@@ -95,7 +95,7 @@ const SettingsPage: React.FC = () => {
                 <div style={{ width: 8, height: 8, background: "#22c55e", borderRadius: "50%" }} />
                 <Text strong style={{ color: "#166534" }}>Premium Active</Text>
               </div>
-            </Card>
+            </Card> */}
           </Space>
         </Col>
 
@@ -107,14 +107,14 @@ const SettingsPage: React.FC = () => {
                 <Form.Item name="name" label="Nama Lengkap" rules={[{ required: true, message: "Nama tidak boleh kosong" }]}>
                   <Input placeholder="Masukkan nama Anda" size="large" style={{ borderRadius: 10 }} />
                 </Form.Item>
-                <Button 
-                  type="primary" 
-                  htmlType="submit" 
-                  loading={loadingProfile} 
-                  style={{ 
-                    borderRadius: 10, 
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loadingProfile}
+                  style={{
+                    borderRadius: 10,
                     height: 40,
-                    background: "linear-gradient(90deg, #6366f1 0%, #a855f7 100%)", 
+                    background: "linear-gradient(90deg, #6366f1 0%, #a855f7 100%)",
                     border: "none",
                     boxShadow: "0 4px 12px rgba(99, 102, 241, 0.2)"
                   }}

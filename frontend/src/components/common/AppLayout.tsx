@@ -24,7 +24,7 @@ const AppLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
-  
+
   const { user } = useAuth();
   const { mutate: logout } = useLogout();
   const navigate = useNavigate();
@@ -70,10 +70,10 @@ const AppLayout: React.FC = () => {
   const SidebarContent = (
     <>
       <div style={{ padding: "24px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-        <div style={{ 
-          width: 32, 
-          height: 32, 
-          background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)", 
+        <div style={{
+          width: 32,
+          height: 32,
+          background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
           borderRadius: 8,
           display: "flex",
           justifyContent: "center",
@@ -132,14 +132,14 @@ const AppLayout: React.FC = () => {
           {SidebarContent}
         </Drawer>
       )}
-      
+
       <Layout style={{ transition: "all 0.2s", minHeight: "100vh" }}>
-        <Header style={{ 
-          padding: isMobile ? "0 16px" : "0 24px", 
-          background: "rgba(255, 255, 255, 0.8)", 
+        <Header style={{
+          padding: isMobile ? "0 16px" : "0 24px",
+          background: "rgba(255, 255, 255, 0.8)",
           backdropFilter: "blur(8px)",
-          display: "flex", 
-          alignItems: "center", 
+          display: "flex",
+          alignItems: "center",
           justifyContent: "space-between",
           position: "sticky",
           top: 0,
@@ -152,25 +152,25 @@ const AppLayout: React.FC = () => {
             onClick={() => isMobile ? setDrawerVisible(true) : setCollapsed(!collapsed)}
             style={{ fontSize: "16px", width: 40, height: 40 }}
           />
-          
+
           <Dropdown menu={{ items: userMenuItems }} trigger={["click"]} placement="bottomRight">
             <div style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ textAlign: "right", display: isMobile ? "none" : "block" }}>
-                <Text strong style={{ display: "block", lineHeight: "1.2" }}>{user?.name}</Text>
-                <Text type="secondary" style={{ fontSize: 11 }}>Premium Account</Text>
+              <div style={{ textAlign: "right", display: isMobile ? "none" : "flex", flexDirection: "column" }}>
+                <Text strong>{user?.name}</Text>
+                <Text type="secondary" style={{ fontSize: 11 }}>{user?.email}</Text>
               </div>
-              <Avatar 
-                size={isMobile ? "default" : "large"} 
-                icon={<UserOutlined />} 
-                style={{ backgroundColor: "#6366f1" }} 
+              <Avatar
+                size={isMobile ? "default" : "large"}
+                icon={<UserOutlined />}
+                style={{ backgroundColor: "#6366f1" }}
               />
             </div>
           </Dropdown>
         </Header>
 
-        <Content style={{ 
-          margin: isMobile ? "16px" : "24px", 
-          padding: 0, 
+        <Content style={{
+          margin: isMobile ? "16px" : "24px",
+          padding: 0,
           minHeight: 280,
           borderRadius: 16
         }}>

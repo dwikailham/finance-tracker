@@ -13,7 +13,9 @@ import {
   InputNumber,
   Select,
   Popconfirm,
-  Radio
+  Radio,
+  Empty,
+  Skeleton
 } from "antd";
 import { 
   PlusOutlined, 
@@ -22,7 +24,8 @@ import {
   CreditCardOutlined, 
   EditOutlined,
   DeleteOutlined,
-  HistoryOutlined
+  HistoryOutlined,
+  MobileOutlined
 } from "@ant-design/icons";
 import { useAccounts, useCreateAccount, useUpdateAccount, useArchiveAccount } from "../hooks/useAccounts";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -31,7 +34,7 @@ import type { AccountType } from "../types/account.types";
 const { Title, Text } = Typography;
 
 const AccountListPage: React.FC = () => {
-  const { data: accounts } = useAccounts();
+  const { data: accounts, isLoading } = useAccounts();
   const { mutate: createAccount, isPending: isCreating } = useCreateAccount();
   const { mutate: updateAccount, isPending: isUpdating } = useUpdateAccount();
   const { mutate: archiveAccount } = useArchiveAccount();
@@ -68,6 +71,7 @@ const AccountListPage: React.FC = () => {
       case "bank": return <BankOutlined />;
       case "cash": return <WalletOutlined />;
       case "credit_card": return <CreditCardOutlined />;
+      case "e_wallet": return <MobileOutlined />;
       default: return <WalletOutlined />;
     }
   };
@@ -83,7 +87,7 @@ const AccountListPage: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="animate-fade-in">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
         <div>
           <Title level={3} style={{ margin: 0 }}>Rekening Saya</Title>
@@ -95,64 +99,90 @@ const AccountListPage: React.FC = () => {
           icon={<PlusOutlined />}
           onClick={() => handleOpenModal()}
           style={{ 
-            borderRadius: 8, 
+            borderRadius: 12, 
             height: 44,
             background: "linear-gradient(90deg, #6366f1 0%, #a855f7 100%)",
-            border: "none"
+            border: "none",
+            boxShadow: "0 4px 12px rgba(99, 102, 241, 0.3)"
           }}
         >
           Tambah Rekening
         </Button>
       </div>
 
-      <Row gutter={[24, 24]}>
-        {accounts?.map((account: any) => (
-          <Col xs={24} sm={12} lg={8} key={account.id}>
-            <Card 
-              className="glassmorphism account-card"
-              actions={[
-                <Tooltip title="Riwayat">
-                  <HistoryOutlined key="history" onClick={() => {}} />
-                </Tooltip>,
-                <Tooltip title="Edit">
-                  <EditOutlined key="edit" onClick={() => handleOpenModal(account)} />
-                </Tooltip>,
-                <Popconfirm
-                  title="Arsipkan rekening?"
-                  description="Rekening tidak akan muncul di pilihan transaksi."
-                  onConfirm={() => archiveAccount(account.id)}
-                >
-                  <Tooltip title="Arsipkan">
-                    <DeleteOutlined key="archive" />
-                  </Tooltip>
-                </Popconfirm>
-              ]}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-                <div style={{ 
-                  width: 48, 
-                  height: 48, 
-                  borderRadius: 12, 
-                  background: account.color || "#6366f1",
-                  color: "white",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  fontSize: 24
-                }}>
-                  {getAccountIcon(account.type)}
+      {isLoading ? (
+        <Row gutter={[24, 24]}>
+          {[1, 2, 3].map(i => (
+            <Col xs={24} sm={12} lg={8} key={i}>
+              <Card style={{ borderRadius: 16 }}>
+                <Skeleton active avatar paragraph={{ rows: 2 }} />
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      ) : accounts?.length === 0 ? (
+        <Empty 
+          image={Empty.PRESENTED_IMAGE_SIMPLE} 
+          description="Belum ada rekening terdaftar"
+          style={{ marginTop: 60 }}
+        >
+          <Button type="primary" onClick={() => handleOpenModal()}>Buat Rekening Pertama</Button>
+        </Empty>
+      ) : (
+        <Row gutter={[24, 24]}>
+          {accounts?.map((account: any) => (
+            <Col xs={24} sm={12} lg={8} key={account.id}>
+              <Card 
+                className="glass-effect"
+                style={{ borderRadius: 20 }}
+                actions={[
+                  <Tooltip title="Riwayat">
+                    <HistoryOutlined key="history" />
+                  </Tooltip>,
+                  <Tooltip title="Edit">
+                    <EditOutlined key="edit" onClick={() => handleOpenModal(account)} />
+                  </Tooltip>,
+                  <Popconfirm
+                    title="Arsipkan rekening?"
+                    description="Rekening tidak akan muncul di pilihan transaksi."
+                    onConfirm={() => archiveAccount(account.id)}
+                    okText="Ya, Arsipkan"
+                    cancelText="Batal"
+                    okButtonProps={{ danger: true }}
+                  >
+                    <Tooltip title="Arsipkan">
+                      <DeleteOutlined key="archive" />
+                    </Tooltip>
+                  </Popconfirm>
+                ]}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+                  <div style={{ 
+                    width: 48, 
+                    height: 48, 
+                    borderRadius: 14, 
+                    background: account.color || "#6366f1",
+                    color: "white",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: 24,
+                    boxShadow: `0 4px 12px ${account.color}44`
+                  }}>
+                    {getAccountIcon(account.type)}
+                  </div>
+                  <Badge count={getTypeLabel(account.type)} style={{ backgroundColor: "#f1f5f9", color: "#64748b", fontWeight: 500 }} />
                 </div>
-                <Badge count={getTypeLabel(account.type)} style={{ backgroundColor: "#f0f0f0", color: "#8c8c8c" }} />
-              </div>
 
-              <div style={{ marginBottom: 8 }}>
-                <Text type="secondary" style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: 1 }}>{account.name}</Text>
-                <Title level={4} style={{ margin: "4px 0 0" }}>{formatCurrency(Number(account.balance))}</Title>
-              </div>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+                <div style={{ marginBottom: 8 }}>
+                  <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>{account.name}</Text>
+                  <Title level={4} style={{ margin: "4px 0 0", color: "var(--color-income)" }}>{formatCurrency(Number(account.balance))}</Title>
+                </div>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
 
       <Modal
         title={editingAccount ? "Edit Rekening" : "Tambah Rekening Baru"}
@@ -160,6 +190,11 @@ const AccountListPage: React.FC = () => {
         onCancel={() => setIsModalVisible(false)}
         onOk={() => form.submit()}
         confirmLoading={isCreating || isUpdating}
+        width={480}
+        style={{ top: 40 }}
+        styles={{ mask: { backdropFilter: "blur(4px)" } }}
+        okText="Simpan"
+        cancelText="Batal"
       >
         <Form
           form={form}
@@ -167,12 +202,12 @@ const AccountListPage: React.FC = () => {
           onFinish={handleFinish}
           initialValues={{ type: "bank", initialBalance: 0 }}
         >
-          <Form.Item name="name" label="Nama Rekening" rules={[{ required: true, message: "Nama wajib diisi" }]}>
-            <Input placeholder="Contoh: BCA Tabungan, Dompet Utama, dll" />
+          <Form.Item name="name" label="Nama Rekening" rules={[{ required: true, message: "Mohon isi nama rekening" }]}>
+            <Input placeholder="Contoh: Tabungan BCA, Dompet, dsb." size="large" />
           </Form.Item>
 
-          <Form.Item name="type" label="Tipe" rules={[{ required: true }]}>
-            <Select options={[
+          <Form.Item name="type" label="Tipe" rules={[{ required: true, message: "Pilih tipe rekening" }]}>
+            <Select size="large" options={[
               { label: "Bank", value: "bank" },
               { label: "Tunai / Cash", value: "cash" },
               { label: "E-Wallet", value: "e_wallet" },
@@ -182,43 +217,27 @@ const AccountListPage: React.FC = () => {
           </Form.Item>
 
           {!editingAccount && (
-            <Form.Item name="initialBalance" label="Saldo Awal" rules={[{ required: true }]}>
+            <Form.Item name="initialBalance" label="Saldo Awal" rules={[{ required: true, message: "Isi saldo awal" }]}>
               <InputNumber 
+                size="large"
                 style={{ width: "100%" }} 
-                formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                parser={(value) => value!.replace(/Rp\s?|(,*)/g, "")}
+                formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                parser={(value) => value!.replace(/Rp\s?|(\.*)/g, "")}
               />
             </Form.Item>
           )}
 
           <Form.Item name="color" label="Warna Identitas">
-            <Radio.Group>
-              <Radio value="#6366f1"><div style={{ width: 20, height: 20, background: "#6366f1", borderRadius: "50%" }} /></Radio>
-              <Radio value="#10b981"><div style={{ width: 20, height: 20, background: "#10b981", borderRadius: "50%" }} /></Radio>
-              <Radio value="#f59e0b"><div style={{ width: 20, height: 20, background: "#f59e0b", borderRadius: "50%" }} /></Radio>
-              <Radio value="#ef4444"><div style={{ width: 20, height: 20, background: "#ef4444", borderRadius: "50%" }} /></Radio>
-              <Radio value="#a855f7"><div style={{ width: 20, height: 20, background: "#a855f7", borderRadius: "50%" }} /></Radio>
+            <Radio.Group style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#a855f7", "#3b82f6", "#64748b"].map(color => (
+                <Radio.Button key={color} value={color} style={{ padding: 4, borderRadius: 8, height: "auto" }}>
+                  <div style={{ width: 24, height: 24, background: color, borderRadius: 6 }} />
+                </Radio.Button>
+              ))}
             </Radio.Group>
           </Form.Item>
         </Form>
       </Modal>
-
-      <style>{`
-        .account-card {
-          border-radius: 20px !important;
-          overflow: hidden;
-          transition: all 0.3s ease;
-        }
-        .account-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 12px 24px rgba(0,0,0,0.1) !important;
-        }
-        .glassmorphism {
-          background: rgba(255, 255, 255, 0.7);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.4);
-        }
-      `}</style>
     </div>
   );
 };

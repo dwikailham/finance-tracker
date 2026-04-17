@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Row, Col, Typography } from "antd";
+import { Card, Row, Col, Typography, Skeleton, Empty } from "antd";
 import { BankOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router";
 
@@ -25,36 +25,42 @@ const AccountBalanceCards: React.FC<AccountBalanceCardsProps> = ({ accounts, loa
   return (
     <Card
       title="Saldo Rekening"
-      extra={<a onClick={() => navigate("/accounts")}>Lihat semua →</a>}
-      loading={loading}
+      extra={<a onClick={() => navigate("/accounts")}>Lihat semua</a>}
       style={{ borderRadius: 16, height: "100%" }}
     >
-      <Row gutter={[8, 8]}>
-        {accounts.map((acc) => (
-          <Col xs={24} key={acc.id}>
-            <Card
-              size="small"
-              style={{ borderRadius: 12, cursor: "pointer", background: "#fafafa" }}
-              onClick={() => navigate("/accounts")}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <BankOutlined style={{ fontSize: 18, color: "#6366f1" }} />
-                  <div>
-                    <Text strong>{acc.name}</Text>
-                    <br />
-                    <Text type="secondary" style={{ fontSize: 12 }}>{acc.type}</Text>
+      {loading ? (
+        <Skeleton active paragraph={{ rows: 3 }} />
+      ) : accounts.length === 0 ? (
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Belum ada rekening" />
+      ) : (
+        <Row gutter={[8, 8]}>
+          {accounts.map((acc) => (
+            <Col xs={24} key={acc.id}>
+              <Card
+                size="small"
+                styles={{ body: { padding: 12 } }}
+                style={{ borderRadius: 12, cursor: "pointer", background: "#f8fafc" }}
+                onClick={() => navigate("/accounts")}
+                hoverable
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ padding: 8, background: "rgba(99, 102, 241, 0.1)", borderRadius: 8 }}>
+                      <BankOutlined style={{ fontSize: 18, color: "#6366f1" }} />
+                    </div>
+                    <div>
+                      <Text strong>{acc.name}</Text>
+                      <br />
+                      <Text type="secondary" style={{ fontSize: 11 }}>{acc.type}</Text>
+                    </div>
                   </div>
+                  <Text strong style={{ color: "var(--color-income)" }}>{formatRupiah(Number(acc.balance))}</Text>
                 </div>
-                <Text strong style={{ color: "#22c55e" }}>{formatRupiah(Number(acc.balance))}</Text>
-              </div>
-            </Card>
-          </Col>
-        ))}
-        {accounts.length === 0 && !loading && (
-          <Col span={24}><Text type="secondary">Belum ada rekening.</Text></Col>
-        )}
-      </Row>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
     </Card>
   );
 };

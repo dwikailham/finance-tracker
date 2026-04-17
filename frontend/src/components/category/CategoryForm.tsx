@@ -9,8 +9,8 @@ interface CategoryFormProps {
   loading?: boolean;
 }
 
-const COMMON_ICONS = ["📦", "🍔", "🚗", "🛒", "💡", "🏥", "🎮", "📚", "🏠", "👕", "💝", "📊", "💼", "💻", "🏪", "📈", "🎁", "💰", "✈️", "☕"];
-const COMMON_COLORS = ["#6B7280", "#EF4444", "#F97316", "#F59E0B", "#EAB308", "#22C55E", "#14B8A6", "#06B6D4", "#3B82F6", "#6366F1", "#8B5CF6", "#EC4899", "#F43F5E"];
+const COMMON_ICONS = ["📦", "🍔", "🚗", "🛒", "💡", "🏥", "🎮", "📚", "🏠", "👕", "💝", "📊", "💼", "💻", "🏪", "📈", "🎁", "💰", "✈️", "☕", "🎬", "🎸", "🔋", "🛠️"];
+const COMMON_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#a855f7", "#3b82f6", "#64748b", "#ec4899", "#14b8a6", "#f97316"];
 
 const CategoryForm: React.FC<CategoryFormProps> = ({
   visible,
@@ -29,11 +29,10 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
     } else if (!visible) {
       form.resetFields();
     } else if (visible && !editingCategory) {
-       // defaults
        form.setFieldsValue({
          type: "expense",
          icon: "📦",
-         color: "#6B7280"
+         color: "#6366f1"
        });
     }
   }, [visible, editingCategory, form]);
@@ -44,22 +43,30 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
 
   return (
     <Modal
-      title={editingCategory ? "Edit Kategori" : "Tambah Kategori Secara Manual"}
+      title={editingCategory ? "Ubah Kategori" : "Buat Kategori Baru"}
       open={visible}
       onCancel={onCancel}
       onOk={() => form.submit()}
       confirmLoading={loading}
+      width={480}
+      style={{ top: 40 }}
+      styles={{ mask: { backdropFilter: "blur(4px)" } }}
       okText="Simpan"
       cancelText="Batal"
       centered
     >
-      <Form form={form} layout="vertical" onFinish={handleFinish}>
+      <Form 
+        form={form} 
+        layout="vertical" 
+        onFinish={handleFinish}
+        requiredMark={false}
+      >
         <Form.Item
           name="name"
           label="Nama Kategori"
-          rules={[{ required: true, message: "Masukkan nama kategori" }]}
+          rules={[{ required: true, message: "Mohon isi nama kategori" }]}
         >
-          <Input placeholder="Contoh: Belanja Bulanan" size="large" />
+          <Input placeholder="Contoh: Belanja Bulanan, Gaji, dsb." size="large" style={{ borderRadius: 10 }} />
         </Form.Item>
 
         <Form.Item
@@ -67,43 +74,43 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
           label="Tipe Kategori"
           rules={[{ required: true }]}
         >
-          <Radio.Group size="large" buttonStyle="solid" disabled={!!editingCategory}>
-            <Radio.Button value="income">Pemasukan</Radio.Button>
-            <Radio.Button value="expense">Pengeluaran</Radio.Button>
+          <Radio.Group size="large" buttonStyle="solid" style={{ width: "100%", display: "flex" }} disabled={!!editingCategory}>
+            <Radio.Button value="income" style={{ flex: 1, textAlign: "center", borderRadius: "10px 0 0 10px" }}>Pemasukan</Radio.Button>
+            <Radio.Button value="expense" style={{ flex: 1, textAlign: "center", borderRadius: "0 10px 10px 0" }}>Pengeluaran</Radio.Button>
           </Radio.Group>
         </Form.Item>
 
-        <Form.Item
-          name="icon"
-          label="Pilih Icon"
-          rules={[{ required: true, message: "Pilih icon" }]}
-        >
-          <Select size="large" placeholder="Pilih Emoji Icon" showSearch>
-            {COMMON_ICONS.map(icon => (
-              <Select.Option key={icon} value={icon}>
-                {icon}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+          <Form.Item
+            name="icon"
+            label="Pilih Ikon"
+            rules={[{ required: true, message: "Pilih ikon" }]}
+          >
+            <Select size="middle" placeholder="Emoji" showSearch style={{ borderRadius: 10 }}>
+              {COMMON_ICONS.map(icon => (
+                <Select.Option key={icon} value={icon}>
+                  <span style={{ fontSize: 18 }}>{icon}</span>
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
 
-        <Form.Item
-          name="color"
-          label="Pilih Warna"
-          rules={[{ required: true, message: "Pilih warna" }]}
-        >
-          <Select size="large" placeholder="Pilih warna untuk badge">
-            {COMMON_COLORS.map(color => (
-              <Select.Option key={color} value={color}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ width: 16, height: 16, borderRadius: "50%", backgroundColor: color }} />
-                  {color}
-                </div>
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-
+          <Form.Item
+            name="color"
+            label="Warna"
+            rules={[{ required: true, message: "Pilih warna" }]}
+          >
+            <Select size="middle" placeholder="Warna" style={{ borderRadius: 10 }}>
+              {COMMON_COLORS.map(color => (
+                <Select.Option key={color} value={color}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "2px 0" }}>
+                    <div style={{ width: 14, height: 14, borderRadius: 4, backgroundColor: color }} />
+                  </div>
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </div>
       </Form>
     </Modal>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Modal, Form, Select, InputNumber } from "antd";
+import { Modal, Form, Select, InputNumber, Space } from "antd";
 import { useCategories } from "../../hooks/useCategories";
 
 interface BudgetFormProps {
@@ -39,31 +39,44 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
 
   return (
     <Modal
-      title={editingId ? "Edit Budget Kategori" : "Set Budget Kategori"}
+      title={editingId ? "Ubah Anggaran" : "Atur Anggaran Kategori"}
       open={visible}
       onCancel={onCancel}
       onOk={() => form.submit()}
       confirmLoading={loading}
+      width={480}
+      style={{ top: 40 }}
+      styles={{ mask: { backdropFilter: "blur(4px)" } }}
       okText="Simpan"
       cancelText="Batal"
       centered
     >
-      <Form form={form} layout="vertical" onFinish={handleFinish}>
+      <Form 
+        form={form} 
+        layout="vertical" 
+        onFinish={handleFinish}
+        requiredMark={false}
+      >
         {!editingId && (
           <Form.Item
             name="categoryId"
             label="Kategori"
-            rules={[{ required: true, message: "Pilih kategori" }]}
+            rules={[{ required: true, message: "Mohon pilih kategori" }]}
           >
             <Select
               placeholder="Pilih Kategori Pengeluaran"
               loading={loadingCategories}
               showSearch
+              size="large"
+              style={{ borderRadius: 10 }}
               optionFilterProp="children"
             >
               {expenseCategories.map((cat: any) => (
                 <Select.Option key={cat.id} value={cat.id}>
-                  {cat.icon} {cat.name}
+                  <Space>
+                    <span style={{ fontSize: 18 }}>{cat.icon}</span>
+                    {cat.name}
+                  </Space>
                 </Select.Option>
               ))}
             </Select>
@@ -72,13 +85,13 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
         
         <Form.Item
           name="amount"
-          label="Jumlah Anggaran (Rp)"
-          rules={[{ required: true, message: "Masukkan jumlah anggaran" }]}
+          label="Jumlah Anggaran"
+          rules={[{ required: true, message: "Mohon isi nominal anggaran" }]}
         >
           <InputNumber
-            style={{ width: "100%" }}
-            formatter={(value) => `${value || 0}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
-            parser={(value) => value ? Number(value.replace(/\./g, "")) : 0}
+            style={{ borderRadius: 10, width: "100%" }}
+            formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+            parser={(value) => value!.replace(/Rp\s?|(\.*)/g, "") as any}
             min={1}
             size="large"
             placeholder="0"

@@ -17,6 +17,7 @@
     "axios": "^1.15.0",
     "dayjs": "^1.11.20",
     "react": "^19.2.4",
+    "react-countup": "^6.5.3",
     "react-dom": "^19.2.4",
     "react-router": "^7.14.0"
   },

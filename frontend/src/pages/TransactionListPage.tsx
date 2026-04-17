@@ -9,16 +9,15 @@ import {
   Select,
   DatePicker,
   Popconfirm,
-  Tooltip
+  Empty,
+  Result
 } from "antd";
 import {
   PlusOutlined,
   SearchOutlined,
   EditOutlined,
   DeleteOutlined,
-  SwapOutlined,
-  ArrowUpOutlined,
-  ArrowDownOutlined,
+  SwapOutlined
 } from "@ant-design/icons";
 import { useTransactions, useDeleteTransaction } from "../hooks/useTransactions";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -40,7 +39,7 @@ const TransactionListPage: React.FC = () => {
     sortOrder: "desc",
   });
 
-  const { data, isLoading } = useTransactions(filters);
+  const { data, isLoading, isError, error, refetch } = useTransactions(filters);
   const { mutate: deleteTransaction } = useDeleteTransaction();
 
   const handleTableChange = (pagination: any, _filters: any, sorter: any) => {
@@ -53,13 +52,25 @@ const TransactionListPage: React.FC = () => {
     }));
   };
 
+  if (isError) {
+    return (
+      <Result
+        status="error"
+        title="Gagal Memuat Transaksi"
+        subTitle={error?.message || "Terjadi kesalahan saat mengambil data dari server."}
+        extra={<Button type="primary" onClick={() => refetch()}>Coba Lagi</Button>}
+      />
+    );
+  }
+
   const columns = [
     {
       title: "Tanggal",
       dataIndex: "transactionDate",
       key: "transactionDate",
       sorter: true,
-      render: (date: string) => formatDate(date),
+      width: 120,
+      render: (date: string) => <Text style={{ fontSize: 13 }}>{formatDate(date)}</Text>,
     },
     {
       title: "Kategori",
@@ -67,8 +78,8 @@ const TransactionListPage: React.FC = () => {
       key: "category",
       render: (category: any) => (
         <Space>
-          <span style={{ fontSize: 18 }}>{category.icon}</span>
-          <Text>{category.name}</Text>
+          <span style={{ fontSize: 18 }}>{category?.icon || "💰"}</span>
+          <Text style={{ fontSize: 13 }}>{category?.name || "Tanpa Kategori"}</Text>
         </Space>
       ),
     },
@@ -76,7 +87,7 @@ const TransactionListPage: React.FC = () => {
       title: "Deskripsi",
       dataIndex: "description",
       key: "description",
-      render: (text: string) => text || "-",
+      render: (text: string) => <Text type="secondary" style={{ fontSize: 13 }}>{text || "-"}</Text>,
     },
     {
       title: "Rekening",
@@ -84,7 +95,7 @@ const TransactionListPage: React.FC = () => {
       key: "account",
       render: (account: any, record: any) => (
         <Space direction="vertical" size={0}>
-          <Text style={{ fontSize: 13 }}>{account.name}</Text>
+          <Text style={{ fontSize: 13 }}>{account?.name}</Text>
           {record.type === "transfer" && record.toAccount && (
             <Text type="secondary" style={{ fontSize: 11 }}>
               <SwapOutlined /> Ke: {record.toAccount.name}
@@ -100,23 +111,20 @@ const TransactionListPage: React.FC = () => {
       sorter: true,
       align: "right" as const,
       render: (amount: number, record: any) => {
-        let color = "#ff4d4f";
+        let className = "text-expense";
         let prefix = "-";
-        let icon = <ArrowDownOutlined />;
-
+        
         if (record.type === "income") {
-          color = "#52c41a";
+          className = "text-income";
           prefix = "+";
-          icon = <ArrowUpOutlined />;
         } else if (record.type === "transfer") {
-          color = "#1890ff";
+          className = "text-transfer";
           prefix = "";
-          icon = <SwapOutlined />;
         }
 
         return (
-          <Text style={{ color, fontWeight: 600 }}>
-            {icon} {prefix}{formatCurrency(amount)}
+          <Text className={className} style={{ fontSize: 14 }}>
+            {prefix}{formatCurrency(amount)}
           </Text>
         );
       },
@@ -124,37 +132,38 @@ const TransactionListPage: React.FC = () => {
     {
       title: "Aksi",
       key: "action",
-      width: 100,
+      width: 80,
+      fixed: "right" as const,
       render: (_: any, record: any) => (
-        <Space size="middle">
-          <Tooltip title="Edit">
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => {
-                setEditingTransaction(record);
-                setIsFormVisible(true);
-              }}
-            />
-          </Tooltip>
+        <Space size="small">
+          <Button
+            type="text"
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setEditingTransaction(record);
+              setIsFormVisible(true);
+            }}
+          />
           <Popconfirm
             title="Hapus transaksi?"
             description="Tindakan ini akan mengembalikan saldo rekening Anda."
             onConfirm={() => deleteTransaction(record.id)}
-            okText="Ya"
-            cancelText="Tidak"
+            okText="Ya, Hapus"
+            cancelText="Batal"
+            okButtonProps={{ danger: true }}
           >
-            <Tooltip title="Hapus">
-              <Button type="text" danger icon={<DeleteOutlined />} />
-            </Tooltip>
+            <Button type="text" size="small" danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
       ),
     },
   ];
 
+  const hasData = (data?.data?.length || 0) > 0;
+
   return (
-    <div>
+    <div className="animate-fade-in">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
         <div>
           <Title level={3} style={{ margin: 0 }}>Daftar Transaksi</Title>
@@ -169,10 +178,11 @@ const TransactionListPage: React.FC = () => {
             setIsFormVisible(true);
           }}
           style={{
-            borderRadius: 8,
+            borderRadius: 12,
             height: 44,
             background: "linear-gradient(90deg, #6366f1 0%, #a855f7 100%)",
-            border: "none"
+            border: "none",
+            boxShadow: "0 4px 12px rgba(99, 102, 241, 0.3)"
           }}
         >
           Tambah Transaksi
@@ -185,18 +195,18 @@ const TransactionListPage: React.FC = () => {
         editingTransaction={editingTransaction}
       />
 
-      <Card className="glassmorphism" style={{ marginBottom: 24, borderRadius: 16 }}>
+      <Card className="glass-effect" style={{ marginBottom: 24, borderRadius: 16 }}>
         <Space wrap size="middle">
           <Input
             placeholder="Cari deskripsi..."
             prefix={<SearchOutlined />}
-            style={{ width: "100%", maxWidth: 220 }}
+            style={{ width: 220 }}
             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value, page: 1 }))}
           />
           <Select
             placeholder="Tipe"
             allowClear
-            style={{ width: 220 }}
+            style={{ width: 150 }}
             options={[
               { label: "Pemasukan", value: "income" },
               { label: "Pengeluaran", value: "expense" },
@@ -205,7 +215,7 @@ const TransactionListPage: React.FC = () => {
             onChange={(val) => setFilters(prev => ({ ...prev, type: val as TransactionType, page: 1 }))}
           />
           <RangePicker
-            style={{ width: "100%", maxWidth: 300 }}
+            style={{ width: 280 }}
             onChange={(dates) => {
               setFilters(prev => ({
                 ...prev,
@@ -218,37 +228,39 @@ const TransactionListPage: React.FC = () => {
         </Space>
       </Card>
 
-      <Card className="glassmorphism" style={{ borderRadius: 16, overflow: "hidden" }} bodyStyle={{ padding: 0 }}>
-        <Table
-          columns={columns}
-          dataSource={data?.data}
-          loading={isLoading}
-          scroll={{ x: 'max-content' }}
-          rowKey="id"
-          pagination={{
-            current: data?.meta?.page,
-            pageSize: data?.meta?.limit,
-            total: data?.meta?.total,
-            showSizeChanger: true,
-          }}
-          onChange={handleTableChange}
-        />
+      <Card className="glass-effect" style={{ borderRadius: 16, overflow: "hidden" }} bodyStyle={{ padding: 0 }}>
+        {!isLoading && !hasData ? (
+          <div style={{ padding: "60px 0" }}>
+            <Empty 
+              image={Empty.PRESENTED_IMAGE_SIMPLE} 
+              description={
+                <span>
+                  Belum ada transaksi ditemukan.<br/>
+                  <Text type="secondary" style={{ fontSize: 12 }}>Coba ubah filter atau tambah transaksi baru.</Text>
+                </span>
+              } 
+            />
+          </div>
+        ) : (
+          <Table
+            columns={columns}
+            dataSource={data?.data}
+            loading={isLoading}
+            scroll={{ x: 800 }}
+            size="middle"
+            rowKey="id"
+            pagination={{
+              current: data?.meta?.page,
+              pageSize: data?.meta?.limit,
+              total: data?.meta?.total,
+              showSizeChanger: true,
+              size: "small",
+              position: ["bottomCenter"]
+            }}
+            onChange={handleTableChange}
+          />
+        )}
       </Card>
-
-      <style>{`
-        .glassmorphism {
-          background: rgba(255, 255, 255, 0.7);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.4);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-        }
-        .ant-table {
-          background: transparent !important;
-        }
-        .ant-table-thead > tr > th {
-          background: rgba(0, 0, 0, 0.02) !important;
-        }
-      `}</style>
     </div>
   );
 };

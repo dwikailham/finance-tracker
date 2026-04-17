@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Typography } from "antd";
+import { Card, Typography, Skeleton } from "antd";
 import { Pie } from "@ant-design/charts";
 import { useCategoryBreakdown } from "../../hooks/useReports";
 import dayjs from "dayjs";
@@ -25,9 +25,13 @@ const CategoryChart: React.FC = () => {
     angleField: "value",
     colorField: "name",
     innerRadius: 0.6,
+    autoFit: true,
     label: {
       text: "name",
       position: "outside" as const,
+      style: {
+        fontSize: 10,
+      }
     },
     tooltip: {
       items: [
@@ -39,28 +43,33 @@ const CategoryChart: React.FC = () => {
     },
     legend: {
       position: "bottom" as const,
+      layout: "horizontal" as const,
     },
     annotations: [
       {
         type: "text" as const,
         style: {
-          text: "Pengeluaran",
+          text: "Breakdown",
           x: "50%",
           y: "50%",
           textAlign: "center" as const,
-          fontSize: 14,
-          fill: "#999",
+          fontSize: 12,
+          fill: "#64748b",
         },
       },
     ],
   };
 
   return (
-    <Card title="Komposisi Pengeluaran" loading={isLoading} style={{ borderRadius: 16, height: "100%" }}>
-      {chartData.length > 0 ? (
+    <Card title="Komposisi Pengeluaran" styles={{ body: { padding: 24 } }} style={{ borderRadius: 16, height: "100%" }}>
+      {isLoading ? (
+        <Skeleton active paragraph={{ rows: 6 }} />
+      ) : chartData.length > 0 ? (
         <Pie {...config} height={300} />
       ) : (
-        <Text type="secondary">Belum ada data pengeluaran bulan ini.</Text>
+        <div style={{ padding: "40px 0", textAlign: "center" }}>
+          <Text type="secondary">Belum ada data pengeluaran bulan ini.</Text>
+        </div>
       )}
     </Card>
   );

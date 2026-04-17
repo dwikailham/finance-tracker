@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Typography } from "antd";
+import { Card, Typography, Skeleton } from "antd";
 import { Line } from "@ant-design/charts";
 import { useTrend } from "../../hooks/useReports";
 
@@ -22,8 +22,10 @@ const TrendChart: React.FC = () => {
     yField: "value",
     colorField: "type",
     smooth: true,
+    autoFit: true,
     style: {
-      lineWidth: 2.5,
+      lineWidth: 3,
+      lineDash: (item: any) => item.type === "Pengeluaran" ? [4, 4] : [0, 0],
     },
     scale: {
       color: {
@@ -47,14 +49,13 @@ const TrendChart: React.FC = () => {
         },
       ],
     },
-    interaction: {
-      tooltip: { render: undefined },
-    },
   };
 
   return (
-    <Card title="Tren Keuangan (6 Bulan)" loading={isLoading} style={{ borderRadius: 16 }}>
-      {chartData.length > 0 ? (
+    <Card title="Tren Keuangan (6 Bulan)" styles={{ body: { padding: 24 } }} style={{ borderRadius: 16 }}>
+      {isLoading ? (
+        <Skeleton active paragraph={{ rows: 6 }} />
+      ) : chartData.length > 0 ? (
         <Line {...config} height={300} />
       ) : (
         <Text type="secondary">Belum ada data untuk ditampilkan.</Text>
